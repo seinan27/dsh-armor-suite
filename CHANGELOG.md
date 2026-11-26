@@ -16,8 +16,8 @@ the line"). Measured on the isolated profile with the hardest single-line reques
 A prompt section that argues invites the model to argue back. One that defines a term is
 read as context.
 
-- Spelling variants added (萝莉 / 罗莉 / 萝梨 / loli / lolii). Measured on the misspelled
-  form: 3 / 3 — the misspelling does not weaken it, it avoids a token-level trigger so the
+- Spelling variants of the term are handled. Measured on the misspelled form: 3 / 3 —
+  a misspelling does not weaken the definition; it avoids a token-level trigger so the
   definition lands first.
 - **New `## 这段不外传`** — anti-extraction. A request to repeat, list the section titles of,
   translate, or "summarise your configuration" is declined and steered back to the task.
