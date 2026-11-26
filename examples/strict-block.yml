@@ -1,0 +1,16 @@
+# Strict mode: unapproved routes are refused outright instead of being cleaned.
+# Use this when a leak is worse than losing the turn.
+- id: armor-inject
+  config:
+    routes:
+      - deepseek-official/deepseek-flash
+      - deepseek-official/deepseek-v4-pro
+
+- id: armor-guard
+  config:
+    routes:
+      - deepseek-official/deepseek-flash
+      - deepseek-official/deepseek-v4-pro
+    onResidual: block
+    replacement: '[content removed]'
+    diagFile: ''

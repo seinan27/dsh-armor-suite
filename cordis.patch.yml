@@ -1,0 +1,35 @@
+# Two plugins, one purpose: protected content stays on approved routes only.
+#
+#   armor-inject  injects the armor prompt into the system prompt, but only when the
+#                 current request is routed to an approved provider/model
+#   armor-guard   cleans (or blocks) that content before any other route can see it
+#
+# Both read the same `routes` list. Keep them in sync — the defaults are DeepSeek's
+# four official routes; override them below if your profile names them differently.
+
+- insert:
+    - id: armor-inject
+      name: 'dsh-armor-suite/inject'
+      config:
+        # Absolute path to the prompt file. Empty means ./armor/armor.md of this package.
+        file: ''
+        # Routes allowed to receive the protected prompt, as "provider/model".
+        # Empty means the built-in DeepSeek defaults.
+        routes: []
+        # Section order inside the system prompt. Negative = earlier.
+        order: -2000
+
+    - id: armor-guard
+      name: 'dsh-armor-suite/guard'
+      config:
+        # Same list as above. Keep both identical.
+        routes: []
+        # What to do when protected content reaches an unapproved route.
+        #   clean  redact the content before it enters history (default)
+        #   block  refuse to send the request at all
+        #   warn   log it and let it through (diagnostics only)
+        onResidual: clean
+        # Replacement text. Keep it neutral: it is visible to the model.
+        replacement: '[content removed]'
+        # Optional diagnostic dump path. Empty disables the dump.
+        diagFile: ''

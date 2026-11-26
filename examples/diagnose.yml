@@ -1,0 +1,11 @@
+# Diagnostic mode: nothing is blocked, every hit is logged and dumped.
+# Use this to learn what actually reaches which route, then switch back.
+- id: armor-inject
+  config:
+    routes: []
+
+- id: armor-guard
+  config:
+    routes: []
+    onResidual: warn
+    diagFile: './armor-guard-diag.json'

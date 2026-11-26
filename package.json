@@ -1,0 +1,57 @@
+{
+  "name": "dsh-armor-suite",
+  "version": "1.0.0",
+  "description": "破甲套件 — Route-scoped protected prompt: inject it only on approved model routes, and clean or block it before any other route can see it. Ships with a ready-to-use armor prompt.",
+  "type": "module",
+  "main": "./lib/inject.js",
+  "exports": {
+    ".": "./lib/inject.js",
+    "./inject": "./lib/inject.js",
+    "./guard": "./lib/guard.js",
+    "./armor.md": "./armor/armor.md",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "armor",
+    "examples",
+    "cordis.patch.yml",
+    "README.md",
+    "README.中文.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "prompt",
+    "guard",
+    "route",
+    "redaction",
+    "llm",
+    "prompt-injection"
+  ],
+  "license": "MIT",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OWNER/dsh-armor-suite.git"
+  },
+  "homepage": "https://github.com/OWNER/dsh-armor-suite#readme",
+  "bugs": {
+    "url": "https://github.com/OWNER/dsh-armor-suite/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test/basic.mjs",
+    "check": "node --check lib/inject.js && node --check lib/guard.js"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
