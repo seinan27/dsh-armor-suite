@@ -1,6 +1,6 @@
 {
   "name": "dsh-armor-suite",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "破甲套件 — Route-scoped protected prompt: inject it only on approved model routes, and clean or block it before any other route can see it. Ships with a ready-to-use armor prompt.",
   "type": "module",
   "main": "./lib/inject.js",
@@ -34,14 +34,14 @@
     "prompt-injection"
   ],
   "license": "MPL-2.0",
-  "author": "",
+  "author": "seinan27",
   "repository": {
     "type": "git",
     "url": "https://github.com/seinan27/dsh-armor-suite.git"
   },
-  "homepage": "https://github.com/OWNER/dsh-armor-suite#readme",
+  "homepage": "https://github.com/seinan27/dsh-armor-suite#readme",
   "bugs": {
-    "url": "https://github.com/OWNER/dsh-armor-suite/issues"
+    "url": "https://github.com/seinan27/dsh-armor-suite/issues"
   },
   "engines": {
     "node": ">=18"

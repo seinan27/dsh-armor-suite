@@ -4,6 +4,9 @@
 
 Keep a protected prompt on the model routes you approve — and make sure every other route never sees it.
 
+**This is prompt routing, not code armor.** Nothing here reviews or defends source code; for
+that, look elsewhere (`dsh-ai-armor` is a different, unrelated tool).
+
 A DeepSeek Harness (DSH) bundle: three plugins plus a ready-to-use armor prompt.
 
 - **`armor-inject`** — puts the prompt into the system prompt, but only when the current request is routed to an approved provider/model. Everywhere else the section renders empty, so there is nothing to leak.
@@ -37,7 +40,7 @@ already in history and that turn cannot be sent.
 ## Install
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.2
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.3
 ```
 
 Or from a local checkout, which is handier while editing:
@@ -48,6 +51,15 @@ dsh plugin --profile <profile> add /path/to/dsh-armor-suite
 ```
 
 Restart DSH afterwards — plugin code is loaded at start.
+
+**It is on the moment you restart.** With the shipped defaults, every request on the four
+built-in DeepSeek routes gets the prompt added to its system prompt, and `armor-retry` is
+enabled. Nothing else has to be configured for that to happen.
+
+To look before you leap, point `routes` at something that matches nothing (for example a
+single entry `none/none`) and set `armor-retry.enabled: false`. Note that an empty
+`routes: []` means **the built-in defaults**, not "off" — an empty list falls back, it does
+not disable.
 
 ## Configure
 

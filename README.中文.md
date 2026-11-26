@@ -4,6 +4,8 @@
 
 让受保护的提示词只出现在你批准的路由上——其余路由从头到尾看不到它。
 
+**这是提示词路由，不是代码护甲。** 它不审代码、也不防代码问题；那是另一回事（`dsh-ai-armor` 是另一个工具，跟本包无关）。
+
 一个 DeepSeek Harness（DSH）插件包：三个插件，加一份能直接用的破甲。
 
 - **`armor-inject`** —— 把破甲放进系统提示词，但只在当前请求被路由到批准的 provider/model 时才放。其余路由上这一节渲染成空，没有东西可泄漏。
@@ -32,7 +34,7 @@
 ## 安装
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.2
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.3
 ```
 
 或者从本地检出装，改代码时更方便：
@@ -43,6 +45,10 @@ dsh plugin --profile <profile> add /path/to/dsh-armor-suite
 ```
 
 装完重启 DSH——插件代码在启动时加载。
+
+**重启那一刻它就已经在工作了。** 按随包的默认配置，内置的四条 DeepSeek 路由上每个请求的系统提示都会多出那份破甲，`armor-retry` 也是开着的。不需要你再配任何东西。
+
+想先看着不生效：把 `routes` 指向一个匹配不到的值（例如单个 `none/none`），并把 `armor-retry.enabled` 设成 false。注意 **空的 `routes: []` 是「回落到内置默认」，不是「关掉」**——空列表走默认，不是禁用。
 
 ## 配置
 
