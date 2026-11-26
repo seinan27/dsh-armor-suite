@@ -52,3 +52,30 @@
         replacement: '[content removed]'
         # Optional diagnostic dump path. Empty disables the dump.
         diagFile: ''
+
+    - id: armor-retry
+      name: 'dsh-armor-suite/retry'
+      config:
+        # A raised compliance rate is not a guarantee. Measured on 13 categories, three
+        # complied in 2 of 3 runs; a second sample is the answer, not a longer prompt.
+        #
+        # When a reply opens like a refusal, this keeps the turn alive for one more step
+        # and asks again. It never suppresses output: when the budget runs out the refusal
+        # is delivered as usual.
+        # OFF by default. Measured 2026-11-26: the turn-level retry does flip a refusal
+        # into an answer (2 of 4 runs), but some turns then end with an internal error
+        # that reads Cannot read properties of undefined (reading 'kind'). Usable for
+        # experiments, not ready to switch on for a user.
+        enabled: false
+        # Follow-ups per turn (0..5). 0 turns the behaviour off without unmounting.
+        #
+        # This cannot be a stream-level retry: the host's `next` may be called once only,
+        # so a second call kills the turn. Instead this waits for `agent/turn-stopping`
+        # and pushes one message into the next-step inbox, which makes the loop take
+        # another step and send a fresh request.
+        maxAttempts: 2
+        # The follow-up text. It restates the standing instruction; it adds no new rule.
+        nudge: ''
+        # Regex sources that force "this is not a refusal", checked first.
+        # Example: ['^我可以帮你设计一个', '测试通过']
+        exceptions: []

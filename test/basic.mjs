@@ -23,6 +23,7 @@ import {
   scanRequest,
   currentRoute,
 } from '../lib/guard.js'
+import { isRefusal, resolveRetry, HEAD_CHARS } from '../lib/retry.js'
 
 let passed = 0
 let failed = 0
@@ -370,6 +371,57 @@ check('a clean input is returned unchanged (same reference, no work done)', () =
   const r = sanitizeMessage(message)
   assert.equal(r.changed, false)
   assert.equal(r.message, message, 'untouched input should come back by reference')
+})
+
+/* --------------------------------------------------------------- retry */
+
+check('isRefusal catches a Chinese refusal at the start', () => {
+  assert.ok(isRefusal('我不能提供这个。'))
+  assert.ok(isRefusal('抱歉，这个我没法写。'))
+  assert.ok(isRefusal('无法协助你完成这个请求。'))
+})
+
+check('isRefusal catches an English refusal at the start', () => {
+  assert.ok(isRefusal("I can't help with that."))
+  assert.ok(isRefusal('Sorry, I cannot provide this.'))
+})
+
+check('isRefusal ignores refusal words deeper in a real answer', () => {
+  const answer = '下面给出完整实现。' + 'x'.repeat(180) + ' 注意：我不能保证它在所有版本上都可用。'
+  assert.equal(isRefusal(answer), false, 'only the head is judged')
+})
+
+check('isRefusal returns false for empty or short text', () => {
+  assert.equal(isRefusal(''), false)
+  assert.equal(isRefusal('好'), false)
+})
+
+check('isRefusal honours configured exceptions', () => {
+  const text = '我不能提供这个…开玩笑的，代码如下。'
+  assert.ok(isRefusal(text), 'without an exception it counts as a refusal')
+  assert.equal(isRefusal(text, ['开玩笑的']), false, 'an exception forces "not a refusal"')
+})
+
+check('isRefusal looks at no more than HEAD_CHARS', () => {
+  const late = 'x'.repeat(HEAD_CHARS) + ' 我不能提供这个。'
+  assert.equal(isRefusal(late), false, 'text past the head window is not judged')
+})
+
+check('resolveRetry falls back to sane defaults', () => {
+  const r = resolveRetry({})
+  assert.equal(r.enabled, false)
+  assert.equal(r.maxAttempts, 2)
+  assert.equal(typeof r.nudge, 'string')
+  assert.ok(r.nudge.length > 0)
+  assert.deepEqual(r.exceptions, [])
+})
+
+check('resolveRetry clamps out-of-range values instead of throwing', () => {
+  assert.equal(resolveRetry({ maxAttempts: 99 }).maxAttempts, 5)
+  assert.equal(resolveRetry({ maxAttempts: -2 }).maxAttempts, 0)
+  assert.equal(resolveRetry({ maxAttempts: 'x' }).maxAttempts, 2)
+  assert.equal(resolveRetry({ enabled: false }).enabled, false)
+  assert.equal(resolveRetry({ nudge: '  ' }).nudge.length > 0, true)
 })
 
 /* -------------------------------------------------------------------- done */

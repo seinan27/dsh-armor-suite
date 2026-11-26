@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.2.0 — 2026-11-26
+
+- New `armor-retry` entry point: when a reply opens like a refusal, keep the turn alive
+  and ask again. **Off by default** — read on.
+- Measured: a stream-level retry is impossible on this host. The waterfall's `next` may be
+  called once only (cordis `events.ts`), and a second call ends the turn with
+  `next() called multiple times`. That is why the previous attempt at this feature sat
+  disabled and never worked.
+- The working mechanism is turn-level: `agent/turn-stopping` runs just before the loop
+  decides to stop, and pushing one message into the next-step inbox makes it take another
+  step. `agent.inject()` is that push.
+- Result on the isolated profile: two of four runs turned a refusal into an answer.
+- Known defect, and the reason it ships disabled: some of those turns end with
+  `Cannot read properties of undefined (reading 'kind')`. Three candidate message shapes
+  were tried and the error persisted, so the follow-up message is missing a field this
+  code does not set. Until that is found, enabling it trades a visible refusal for a
+  hidden turn error.
+- Six new checks (39 → 45) cover the refusal detector and its configuration.
+
 ## 1.1.1 — 2026-11-26
 
 - Sixteen more checks (33 → 37). Four of them assert that no input object is mutated:
