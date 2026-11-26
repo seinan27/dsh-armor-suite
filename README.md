@@ -4,11 +4,11 @@
 
 Keep a protected prompt on the model routes you approve — and make sure every other route never sees it.
 
-A DeepSeek Harness (DSH) bundle: two plugins plus a ready-to-use armor prompt.
+A DeepSeek Harness (DSH) bundle: three plugins plus a ready-to-use armor prompt.
 
 - **`armor-inject`** — puts the prompt into the system prompt, but only when the current request is routed to an approved provider/model. Everywhere else the section renders empty, so there is nothing to leak.
 - **`armor-guard`** — cleans or refuses that content before any unapproved route can reach it: on the way into conversation history, and again just before a request is sent.
-- **`armor/armor.md`** — a working example prompt. Replace it with your own.
+- **`armor/armor.md`** — a working example prompt. Replace it with your own. It also declines requests to repeat, list the sections of, or summarise itself.
 - **`armor-retry`** — when a reply opens like a refusal it keeps the turn alive and asks again. It raises the compliance rate (a ransomware module answered 2 of 3 runs without it, 3 of 4 with it) but cannot move a request the model refuses categorically. Both measurements are in `lib/retry.js`.
 
 ---
@@ -76,6 +76,13 @@ patch file; the two route lists must stay identical.
     onResidual: clean   # clean | block | warn
     replacement: '[content removed]'
     diagFile: ''        # empty = no dump
+
+- id: armor-retry
+  config:
+    enabled: true
+    maxAttempts: 2      # follow-ups per turn, 0..5; 0 turns it off
+    nudge: ''           # empty = the built-in follow-up line
+    exceptions: []      # regex sources that force "not a refusal"
 ```
 
 `routes` entries are exact `provider/model` strings. Prefix matching is deliberately not
@@ -163,7 +170,7 @@ it is now measured rather than assumed.
 ### The unit tests
 
 ```
-node test/basic.mjs     37 checks, no framework, no network, no host
+node test/basic.mjs     45 checks, no framework, no network, no host
 ```
 
 Covers: marker stripping (paired, lone, multiple pairs, custom pairs), signature fallback,
@@ -201,7 +208,7 @@ Not covered, on purpose:
 ## Test
 
 ```bash
-node test/basic.mjs     # 28 checks, no framework, no network
+node test/basic.mjs     # 45 checks, no framework, no network
 ```
 
 ## License
