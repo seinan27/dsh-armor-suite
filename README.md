@@ -45,7 +45,7 @@ already in history and that turn cannot be sent.
 ## Install
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.5
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.6
 ```
 
 Or from a local checkout, which is handier while editing:
@@ -84,6 +84,7 @@ patch file; the two route lists must stay identical.
 
 - id: armor-guard
   config:
+    enabled: true       # false = all three hooks pass straight through
     routes: []          # same list as above
     markers:            # same pairs as above; several are allowed
       - begin: '<!-- armor:begin -->'
@@ -211,10 +212,34 @@ What that number is not:
   exposure. The category count and the counts are what can be published; the prompts are
   yours to write
 
+### Is it running?
+
+Mount writes a snapshot to `$DSH_HOME/armor-suite-status.json` (default `~/.dsh/`):
+
+```bash
+cat "$DSH_HOME/armor-suite-status.json"
+```
+
+```json
+{
+  "armor-inject": { "enabled": true, "routes": ["…"], "promptChars": 12604, "file": "…" },
+  "armor-guard":  { "enabled": true, "routes": ["…"], "markers": 1, "signatures": 2, "onResidual": "clean" },
+  "armor-retry":  { "enabled": true, "maxAttempts": 2 }
+}
+```
+
+The values are the settings **after** defaults resolve, which is the only version worth
+printing — `routes: []` in your config means the built-in list, and the file shows which one
+you actually got.
+
+Why a file and not a log line: `ctx.logger?.info?.(…)` is optional-chained, so when that
+service is not present the call silently does nothing, which looks exactly like having no
+status output at all. The log line is still there; it is not the mechanism.
+
 ### The unit tests
 
 ```
-node test/basic.mjs     45 checks, no framework, no network, no host
+node test/basic.mjs     47 checks, no framework, no network, no host
 ```
 
 Covers: marker stripping (paired, lone, multiple pairs, custom pairs), signature fallback,
@@ -252,7 +277,7 @@ Not covered, on purpose:
 ## Test
 
 ```bash
-node test/basic.mjs     # 45 checks, no framework, no network
+node test/basic.mjs     # 47 checks, no framework, no network
 ```
 
 ## License

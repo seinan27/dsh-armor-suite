@@ -251,6 +251,28 @@ check('guard keeps the original for an approved route', async () => {
   assert.equal(out, decision, 'approved routes get the untouched decision')
 })
 
+check('guard is a no-op on all three hooks when disabled', async () => {
+  const { ctx, handlers } = makeGuardCtx()
+  applyGuard(ctx, { routes: ROUTES, enabled: false })
+
+  const exec = { name: 't', agent: { model: { current: () => ({ provider: 'packycode', model: 'claude-sonnet-5-5' }) } } }
+  const decision = { kind: 'accept', content: [{ type: 'text', text: `${BEGIN}secret${END}` }] }
+  const out = await handlers.get('tools/post-execute')(exec, {}, async () => decision)
+  assert.equal(out, decision, 'disabled guard must not touch post-execute')
+
+  const pre = { modelSelection: { provider: 'packycode', model: 'claude-sonnet-5-5' } }
+  const pd = { kind: 'accept', messages: [{ role: 'user', content: [{ type: 'text', text: `${BEGIN}secret${END}` }] }] }
+  const out2 = await handlers.get('agent/pre-step')(pre, async () => pd)
+  assert.equal(out2, pd, 'disabled guard must not touch pre-step')
+
+  let calls = 0
+  handlers.get('llm/stream')({ provider: 'packycode', model: 'claude-sonnet-5-5' }, () => {
+    calls += 1
+    return 'ok'
+  })
+  assert.equal(calls, 1, 'disabled guard must pass the stream through exactly once')
+})
+
 check('guard cleans the result for an unknown route', async () => {
   const { ctx, handlers } = makeGuardCtx()
   applyGuard(ctx, { routes: ROUTES })

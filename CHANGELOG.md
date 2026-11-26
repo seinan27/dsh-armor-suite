@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.2.6 — 2026-11-26
+
+**Status you can actually read, and the guard gets the same switch.**
+
+- A status snapshot at `$DSH_HOME/armor-suite-status.json` (default `~/.dsh/`), rewritten at
+  mount. It holds the settings *after* defaults resolve — route list, prompt size in
+  characters, marker and signature counts, `onResidual`, retry settings — not what the config
+  file says.
+  The reason it is a file and not a log line: `ctx.logger?.info?.(…)` is optional-chained, so
+  when that service is absent the call does nothing and looks exactly like having no status
+  output at all. Every plugin on this machine that needed to answer "did it load?" wrote a
+  file for the same reason. The log line stays, as a bonus, not as the mechanism.
+- `armor-guard` takes `enabled`, matching the other two. Set it to `false` and all three
+  hooks pass straight through. Previously there was no configuration that could make the
+  guard a no-op — `routes: []`, `markers: []` and `signatures: []` all fall back to the
+  defaults — so "turn the whole bundle off for now" meant uninstalling it. The `llm/stream`
+  hook is the one that can throw, so it is the one that most needed a way out.
+- Test count is now 47 (two new: `armor-inject` renders empty when disabled, `armor-guard`
+  passes all three hooks through when disabled). The README prints the number the test run
+  actually reports.
 ## 1.2.5 — 2026-11-26
 
 **Strength is now stated in the README, with its cost and its limits.**
@@ -14,6 +34,7 @@
 - No comparison to other projects appears anywhere in the docs. Picking a metric that suits
   us and running it against numbers measured on someone else's private test set would not be
   evidence.
+
 ## 1.2.4 — 2026-11-26
 
 **Visibility, and a way to hold it off.**
@@ -30,6 +51,7 @@
   at the projects that do those things instead.
 - README carries the retry measurement in the body rather than only in the module header:
   stochastic refusals improve (2 of 3 → 3 of 4), categorical ones do not (1 of 4 either way).
+
 ## 1.2.3 — 2026-11-26
 
 **Release state only; no functional change.**
@@ -84,13 +106,16 @@ context.
 
 ## 1.2.0 — 2026-11-26
 
-- `markers` and `signatures` are configurable. Bring your own prompt and declare its
-  markers instead of being limited to the built-in ones.
-- Several marker pairs can be declared; all of them are stripped in one pass.
-- New `armor/README.md` states what the shipped prompt is tuned for and what to change
-  when you bring your own.
-- README states the real boundary plainly: the guard only sees what you declare. Foreign
-  prompts without declared markers pass through untouched. Pinned by a test.
+**New `armor-retry`, shipped off by default.**
+
+- When a reply opens like a refusal, keep the turn alive and ask again.
+- Off by default, because at this version neither path worked cleanly: a stream-level retry
+  is impossible (the host's `next` may be called once only — a second call throws
+  `next() called multiple times`), and the first turn-level attempt died with
+  `Cannot read properties of undefined (reading 'kind')` because the injected message was
+  missing `source`.
+- Shipping it enabled would have meant shipping a crash. The next release fixes the shape
+  and turns it on.
 
 ## 1.1.1 — 2026-11-26
 

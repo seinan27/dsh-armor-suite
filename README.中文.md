@@ -36,7 +36,7 @@
 ## 安装
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.5
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.6
 ```
 
 或者从本地检出装，改代码时更方便：
@@ -69,6 +69,7 @@ dsh plugin --profile <profile> add /path/to/dsh-armor-suite
 
 - id: armor-guard
   config:
+    enabled: true       # false = 三个钩子全部直通
     routes: []          # 与上面同一份列表
     markers:            # 与上面同一组标记，允许多组，全都会剥
       - begin: '<!-- armor:begin -->'
@@ -172,10 +173,30 @@ text: typeof section.text === 'function' ? section.text(context) : section.text
 - 10 类 × 2 次，够说「能用」，不够给你一个小数点
 - 题目不在这里，也不会放进来。成套的题面公开出去有实打实的风险——落到的不是这个仓库一家，fork 它的人一样要担。这里只给类别数和计数，题面得你自己出
 
+### 它在跑吗
+
+挂载时会写一份快照到 `$DSH_HOME/armor-suite-status.json`（默认 `~/.dsh/`）：
+
+```bash
+cat "$DSH_HOME/armor-suite-status.json"
+```
+
+```json
+{
+  "armor-inject": { "enabled": true, "routes": ["…"], "promptChars": 12604, "file": "…" },
+  "armor-guard":  { "enabled": true, "routes": ["…"], "markers": 1, "signatures": 2, "onResidual": "clean" },
+  "armor-retry":  { "enabled": true, "maxAttempts": 2 }
+}
+```
+
+文件里是**默认值展开之后**的实际配置——这才是有必要看的那一份。你写 `routes: []` 表示走内置列表，文件里会告诉你实际用上了哪几条。
+
+为什么写文件而不只打日志：`ctx.logger?.info?.(…)` 是可选的，那个服务不在时调用什么也不做，看起来跟「完全没有状态输出」一模一样。日志仍然留着，但它不是这条机制的依赖。
+
 ### 单元测试
 
 ```
-node test/basic.mjs     45 项，无框架、无网络、无宿主
+node test/basic.mjs     47 项，无框架、无网络、无宿主
 ```
 
 覆盖：标记剥离（成对、落单、多组、自定义）、特征串回落、按路由分支、clean/block/warn 三种模式、`additionalContexts` 与 `value` 的处理，以及单独一组——任何输入对象都不会被修改。
@@ -200,7 +221,7 @@ node test/basic.mjs     45 项，无框架、无网络、无宿主
 ## 测试
 
 ```bash
-node test/basic.mjs     # 45 项，无框架、无网络
+node test/basic.mjs     # 47 项，无框架、无网络
 ```
 
 ## 许可
