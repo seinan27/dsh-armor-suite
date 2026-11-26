@@ -1,4 +1,4 @@
-# dsh-armor-suite（破甲套件）
+# dsh-armor-suite[破甲套件]
 
 [English](./README.md) | [简体中文](./README.中文.md)
 
@@ -131,6 +131,6 @@ node test/basic.mjs     # 28 checks, no framework, no network
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MPL-2.0 — see [LICENSE](./LICENSE).
 
 Not affiliated with or endorsed by DeepSeek. Use at your own judgement.

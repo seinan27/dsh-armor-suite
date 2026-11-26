@@ -32,7 +32,7 @@
     "llm",
     "prompt-injection"
   ],
-  "license": "MIT",
+  "license": "MPL-2.0",
   "author": "",
   "repository": {
     "type": "git",

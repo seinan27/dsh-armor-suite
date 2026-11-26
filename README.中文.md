@@ -1,4 +1,4 @@
-# dsh-armor-suite（破甲套件）
+# dsh-armor-suite[破甲套件]
 
 [English](./README.md) | [简体中文](./README.中文.md)
 
@@ -114,6 +114,6 @@ node test/basic.mjs     # 28 项，无框架、无网络、无宿主
 
 ## 许可
 
-MIT，见 [LICENSE](./LICENSE)。
+MPL-2.0，见 [LICENSE](./LICENSE)。
 
 与 DeepSeek 官方无关，也未获其背书。用不用、怎么用，自己判断。
