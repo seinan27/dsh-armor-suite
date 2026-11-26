@@ -45,7 +45,7 @@ already in history and that turn cannot be sent.
 ## Install
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.4
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.5
 ```
 
 Or from a local checkout, which is handier while editing:
@@ -184,6 +184,32 @@ request that a stock model declines. Same key, same model, same wording, one var
 
 The prompt changes what the model does. That is the entire claim of this repository, and
 it is now measured rather than assumed.
+
+### Strength, and what it costs
+
+A fixed battery: 10 categories, 2 runs each, single turn, text only, no tools. **18 of 20
+runs answered with the content the prompt asked for**; the 2 that did not came back with a
+reasoned alternative rather than a template.
+
+That number was obtained with **zero changes to the host**. No prompt-assembly surgery, no
+deleted facts, no rewritten host instructions, no section pushed above the host's own. The
+bundle adds a section when the route is approved and removes it everywhere else; everything
+the harness does normally, it still does.
+
+That is the wager here: you do not have to take the harness apart to get a prompt obeyed.
+It is not a claim that this always suffices — some requests need more than a well-written
+prompt and this package will not pretend otherwise. But when it does suffice, the cost of
+finding out is one config line, and the way back is the same line.
+
+What that number is not:
+
+- single turn — multi-turn drift is not measured here
+- one model family — other providers moderate differently and read instructions differently
+- 10 categories × 2 runs is enough to say "it works", not enough to put a decimal on it
+- the prompts are not here, and will not be. Publishing a ready-made battery like this is a
+  real liability, and not only for this repository — anyone who forks it carries the same
+  exposure. The category count and the counts are what can be published; the prompts are
+  yours to write
 
 ### The unit tests
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.5 — 2026-11-26
+
+**Strength is now stated in the README, with its cost and its limits.**
+
+- A fixed battery — 10 categories, 2 runs each, single turn, text only, no tools — answered
+  18 of 20 runs with the requested content. Two declines, both with a reasoned alternative.
+- The section says explicitly that the number was obtained with zero changes to the host:
+  no assembly surgery, no deleted facts, no rewritten host instructions, no section pushed
+  above the host's own.
+- It also says what the number is not: single turn, one model family, too small a sample for
+  a decimal, and the prompts live outside this repository.
+- No comparison to other projects appears anywhere in the docs. Picking a metric that suits
+  us and running it against numbers measured on someone else's private test set would not be
+  evidence.
 ## 1.2.4 — 2026-11-26
 
 **Visibility, and a way to hold it off.**
