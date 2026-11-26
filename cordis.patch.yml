@@ -22,6 +22,7 @@
         routes: []
         # Section order inside the system prompt. Negative = earlier.
         order: -2000
+        enabled: true
         # Marker pair written around the prompt. The guard strips by this exact boundary,
         # so both plugins must agree. Add more pairs only if you also handle them in guard.
         markers:

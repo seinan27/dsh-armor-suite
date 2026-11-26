@@ -1,5 +1,38 @@
 # Changelog
 
+## 1.2.4 — 2026-11-26
+
+**Visibility, and a way to hold it off.**
+
+- `armor-inject` takes `enabled`. Set it to `false` and the section renders as an empty
+  string on every route — the same path an unapproved route already takes, so turning it off
+  leaves nothing behind rather than a disabled plugin that still contributes text.
+- One `info` line at mount, per plugin, answering "did it load, and with what":
+  `[armor-inject] on · routes=4 · prompt=27432 chars · file=…`,
+  `[armor-guard] ready · routes=4 · markers=1 · signatures=2 · onResidual=clean`,
+  `[armor-retry] enabled=true · maxAttempts=2`. A log line never stops a mount: every one is
+  wrapped.
+- README says up front what this is not — not a strength plugin, not code armor — and points
+  at the projects that do those things instead.
+- README carries the retry measurement in the body rather than only in the module header:
+  stochastic refusals improve (2 of 3 → 3 of 4), categorical ones do not (1 of 4 either way).
+## 1.2.3 — 2026-11-26
+
+**Release state only; no functional change.**
+
+- `package.json`: `homepage` and `bugs` still pointed at a placeholder (`OWNER`), which
+  resolved to a 404; `author` was an empty string.
+- CHANGELOG: two identical `1.2.2` headings merged.
+- Both READMEs open by saying this is prompt routing, not code armor, so it is not confused
+  with an unrelated tool of a similar name.
+- The install section states that the bundle is active the moment DSH restarts, what it
+  touches by default, and how to hold it off. An empty `routes: []` falls back to the
+  built-in defaults; it does not disable anything.
+- The install line and clone URL carried an `<owner>` placeholder up to this point, so
+  copying them verbatim failed. It now names the owner and pins a tag.
+- `lib/retry.js`: one comment described a measured case in terms this repository should not
+  put in writing.
+
 ## 1.2.2 — 2026-11-26
 
 **One section of `armor/armor.md` rewritten from argument to definition, driven by measurement.**

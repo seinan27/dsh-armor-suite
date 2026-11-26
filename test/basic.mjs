@@ -93,6 +93,16 @@ check('inject returns an empty string on any other route', () => {
   assert.equal(text(undefined), '')
 })
 
+check('inject renders empty on every route when disabled', () => {
+  const sections = []
+  const ctx = { on: (event, fn) => (event === 'agent/created' ? fn({ agent: makeAgent(sections) }) : undefined) }
+  applyInject(ctx, { routes: ROUTES, enabled: false })
+
+  const text = sections[0].text
+  assert.equal(text({ modelSelection: { provider: 'deepseek-official', model: 'deepseek-flash' } }), '')
+  assert.equal(text({ modelSelection: { provider: 'deepseek-account', model: 'deepseek-v4-pro' } }), '')
+})
+
 check('inject tolerates a missing systemPrompt', () => {
   const ctx = { on: (event, fn) => (event === 'agent/created' ? fn({ agent: { ctx: {} } }) : undefined) }
   applyInject(ctx, { routes: ROUTES }) // must not throw

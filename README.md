@@ -4,15 +4,20 @@
 
 Keep a protected prompt on the model routes you approve — and make sure every other route never sees it.
 
-**This is prompt routing, not code armor.** Nothing here reviews or defends source code; for
-that, look elsewhere (`dsh-ai-armor` is a different, unrelated tool).
+**This is not a strength plugin.** It does not raise how often a model complies, it does not
+reshuffle request shapes, and it does not normalise input — other projects do that, and this
+one does not compete with them. It answers one question: *is my prompt visible to a model I
+never approved it for, including the copy already sitting in the conversation history?*
+
+**It is also not code armor.** Nothing here reviews or defends source code; for that, look
+elsewhere (`dsh-ai-armor` is a different, unrelated tool).
 
 A DeepSeek Harness (DSH) bundle: three plugins plus a ready-to-use armor prompt.
 
 - **`armor-inject`** — puts the prompt into the system prompt, but only when the current request is routed to an approved provider/model. Everywhere else the section renders empty, so there is nothing to leak.
 - **`armor-guard`** — cleans or refuses that content before any unapproved route can reach it: on the way into conversation history, and again just before a request is sent.
 - **`armor/armor.md`** — a working example prompt. Replace it with your own. It also declines requests to repeat, list the sections of, or summarise itself.
-- **`armor-retry`** — when a reply opens like a refusal it keeps the turn alive and asks again. It raises the compliance rate (a ransomware module answered 2 of 3 runs without it, 3 of 4 with it) but cannot move a request the model refuses categorically. Both measurements are in `lib/retry.js`.
+- **`armor-retry`** — when a reply opens like a refusal it keeps the turn alive and asks again. It raises the compliance rate on refusals that are *stochastic* (a ransomware module: 2 of 3 runs without it, 3 of 4 with it) and does nothing for a request the model refuses categorically (1 of 4 either way — the model's own reasoning says the refusal is a line it will not cross). Resampling moves odds, not decisions.
 
 ---
 
@@ -40,7 +45,7 @@ already in history and that turn cannot be sent.
 ## Install
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.3
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.4
 ```
 
 Or from a local checkout, which is handier while editing:
@@ -72,6 +77,7 @@ patch file; the two route lists must stay identical.
     file: ''            # empty = ./armor/armor.md of this package
     routes: []          # empty = built-in DeepSeek defaults
     order: -2000
+    enabled: true       # false = render empty on every route
     markers:
       - begin: '<!-- armor:begin -->'
         end: '<!-- armor:end -->'

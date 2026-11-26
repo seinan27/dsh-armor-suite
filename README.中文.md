@@ -4,14 +4,16 @@
 
 让受保护的提示词只出现在你批准的路由上——其余路由从头到尾看不到它。
 
-**这是提示词路由，不是代码护甲。** 它不审代码、也不防代码问题；那是另一回事（`dsh-ai-armor` 是另一个工具，跟本包无关）。
+**这不是强度插件。** 它不提高模型配合度、不改写请求形状、不做输入归一化——那些是别的项目在做的事，本包不跟它们比。它只回答一个问题：**我的破甲，会不会被一个我没批准过的模型看到——包括已经躺在对话历史里的那一份？**
+
+**这也不是代码护甲。** 它不审代码、不防代码问题；那是另一回事（`dsh-ai-armor` 是另一个工具，跟本包无关）。
 
 一个 DeepSeek Harness（DSH）插件包：三个插件，加一份能直接用的破甲。
 
 - **`armor-inject`** —— 把破甲放进系统提示词，但只在当前请求被路由到批准的 provider/model 时才放。其余路由上这一节渲染成空，没有东西可泄漏。
 - **`armor-guard`** —— 在非批准路由碰到那段内容之前清理或拦截：一次在它进入对话历史之前，一次在请求即将发出之前。
 - **`armor/armor.md`** —— 一份能直接用的样本破甲。换成你自己的也行。它同时对「复述自己、列出小节、总结设定」这类请求不作回应。
-- **`armor-retry`** —— 回复开头像拒绝时，把这一轮续上再问一次。它会抬高不拒的比例（勒索模块：不开时 3 次里 2 次给，开了 4 次里 3 次给），但模型认定要拒的那一类它推不动。两组实测都写在 `lib/retry.js` 里。
+- **`armor-retry`** —— 回复开头像拒绝时，把这一轮续上再问一次。它对**概率性**的拒绝有效（勒索模块：不开时 3 次里 2 次给，开了 4 次里 3 次给），对**认定要拒**的那一类一点用没有（开不开都是 4 次里 1 次——模型自己的推理里写着，那条线它不跨）。重采样改的是赔率，不是决定。
 
 ---
 
@@ -34,7 +36,7 @@
 ## 安装
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.3
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.4
 ```
 
 或者从本地检出装，改代码时更方便：
@@ -60,6 +62,7 @@ dsh plugin --profile <profile> add /path/to/dsh-armor-suite
     file: ''            # 空 = 本包的 ./armor/armor.md
     routes: []          # 空 = 内置的 DeepSeek 默认路由
     order: -2000
+    enabled: true       # false = render empty on every route
     markers:
       - begin: '<!-- armor:begin -->'
         end: '<!-- armor:end -->'
