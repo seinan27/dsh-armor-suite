@@ -37,13 +37,13 @@ already in history and that turn cannot be sent.
 ## Install
 
 ```bash
-dsh plugin --profile <profile> add github:<owner>/dsh-armor-suite
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.2
 ```
 
 Or from a local checkout, which is handier while editing:
 
 ```bash
-git clone https://github.com/<owner>/dsh-armor-suite.git
+git clone https://github.com/seinan27/dsh-armor-suite.git
 dsh plugin --profile <profile> add /path/to/dsh-armor-suite
 ```
 
