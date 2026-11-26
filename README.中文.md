@@ -36,7 +36,7 @@
 ## 安装
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.6
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.7
 ```
 
 或者从本地检出装，改代码时更方便：

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.7 — 2026-11-26
+
+**The status file now describes what is running now.**
+
+- `note()` drops entries whose `pid` is not the current process. Without that, a restart left
+  the previous run's entries in `armor-suite-status.json` forever, and the file accumulated
+  every process that had ever mounted the bundle.
+- This is not cosmetic. The file exists to answer "did it load, and with what" — and after one
+  restart it answered with plugins that were no longer loaded. A profile that does not run
+  `armor-inject` would still show an `armor-inject` entry from an earlier run, which is worse
+  than having no status output at all.
+- Found the same day it shipped, in a live install: an entry from a test run sat next to the
+  live `armor-guard` and `armor-retry` entries.
 ## 1.2.6 — 2026-11-26
 
 **Status you can actually read, and the guard gets the same switch.**

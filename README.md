@@ -45,7 +45,7 @@ already in history and that turn cannot be sent.
 ## Install
 
 ```bash
-dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.6
+dsh plugin --profile <profile> add github:seinan27/dsh-armor-suite#v1.2.7
 ```
 
 Or from a local checkout, which is handier while editing:
