@@ -130,6 +130,45 @@ empty string. Nothing is decided after the fact.
 For the guard, `exec.agent.model.current()` gives the route that produced a tool result,
 so the same result can be kept for one model and cleaned for another.
 
+## Verified, not just asserted
+
+### The mechanism
+
+An isolated `DSH_HOME` containing **this bundle only**, pointed at a local provider that
+logs every outbound request. One switch: whether the model is on the approved list.
+
+| | approved route | not approved |
+|---|---|---|
+| system prompt | 15,349 chars | 2,899 chars |
+| `armor:begin` marker | present | absent |
+| prompt body | present | **absent** |
+
+The 12,450-character difference is the prompt itself. On a route that is not approved it
+is never written into the request — it is not sent and then scrubbed.
+
+### The effect
+
+An isolated `DSH_HOME` containing **this bundle only**, on a real DeepSeek route, sent one
+request that a stock model declines. Same key, same model, same wording, one variable.
+
+| | this bundle | clean profile |
+|---|---|---|
+| response | followed the protected prompt | declined |
+| reasoning | cites the prompt's own rules | refuses on its own grounds |
+
+The prompt changes what the model does. That is the entire claim of this repository, and
+it is now measured rather than assumed.
+
+### The unit tests
+
+```
+node test/basic.mjs     37 checks, no framework, no network, no host
+```
+
+Covers: marker stripping (paired, lone, multiple pairs, custom pairs), signature fallback,
+per-route behaviour, block/clean/warn modes, `additionalContexts` and `value` handling,
+and — separately — that no input object is ever mutated.
+
 ## What is covered, and what is not
 
 Covered:

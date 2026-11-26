@@ -17,6 +17,7 @@ import {
   apply as applyGuard,
   sanitizeText,
   sanitizeBlocks,
+  sanitizeMessage,
   sanitizeMessages,
   sanitizeJsonValue,
   scanRequest,
@@ -331,6 +332,44 @@ check('an empty marker list falls back to the defaults, never to "no markers"', 
   const r = sanitizeText(`${BEGIN}x${END}`)
   assert.ok(r.changed, 'empty config must still use the default markers')
   applyGuard(makeGuardCtx().ctx, {})
+})
+
+/* --------------------------------------------------------- immutability */
+
+check('sanitising a message does not mutate the input object', () => {
+  const original = { role: 'user', content: [{ type: 'text', text: `${BEGIN}secret${END}` }] }
+  const snapshot = JSON.stringify(original)
+  const r = sanitizeMessage(original)
+  assert.ok(r.changed, 'should report a change')
+  assert.equal(JSON.stringify(original), snapshot, 'the input must be untouched')
+  assert.notEqual(r.message, original, 'a new object must come back')
+})
+
+check('sanitising a message array does not mutate the input array', () => {
+  const arr = [
+    { role: 'user', content: `${BEGIN}one${END}` },
+    { role: 'assistant', content: 'clean' },
+  ]
+  const snapshot = JSON.stringify(arr)
+  const r = sanitizeMessages(arr)
+  assert.ok(r.changed)
+  assert.equal(JSON.stringify(arr), snapshot, 'the input array and its members must be untouched')
+  assert.notEqual(r.messages, arr, 'a new array must come back')
+})
+
+check('sanitising a value tree does not mutate the input', () => {
+  const value = { a: `${BEGIN}x${END}`, b: ['plain', `${BEGIN}y${END}`] }
+  const snapshot = JSON.stringify(value)
+  const r = sanitizeJsonValue(value)
+  assert.ok(r.changed)
+  assert.equal(JSON.stringify(value), snapshot, 'the input value must be untouched')
+})
+
+check('a clean input is returned unchanged (same reference, no work done)', () => {
+  const message = { role: 'user', content: 'ordinary text' }
+  const r = sanitizeMessage(message)
+  assert.equal(r.changed, false)
+  assert.equal(r.message, message, 'untouched input should come back by reference')
 })
 
 /* -------------------------------------------------------------------- done */
