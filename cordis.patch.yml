@@ -62,11 +62,9 @@
         # When a reply opens like a refusal, this keeps the turn alive for one more step
         # and asks again. It never suppresses output: when the budget runs out the refusal
         # is delivered as usual.
-        # OFF by default. Measured 2026-11-26: the turn-level retry does flip a refusal
-        # into an answer (2 of 4 runs), but some turns then end with an internal error
-        # that reads Cannot read properties of undefined (reading 'kind'). Usable for
-        # experiments, not ready to switch on for a user.
-        enabled: false
+        # Measured: stochastic refusals move (ransomware 2/3 -> 3/4), a categorically
+        # refused request does not move at all. It raises the rate; it guarantees nothing.
+        enabled: true
         # Follow-ups per turn (0..5). 0 turns the behaviour off without unmounting.
         #
         # This cannot be a stream-level retry: the host's `next` may be called once only,

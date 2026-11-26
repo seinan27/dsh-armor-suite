@@ -1,6 +1,6 @@
 {
   "name": "dsh-armor-suite",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "破甲套件 — Route-scoped protected prompt: inject it only on approved model routes, and clean or block it before any other route can see it. Ships with a ready-to-use armor prompt.",
   "type": "module",
   "main": "./lib/inject.js",

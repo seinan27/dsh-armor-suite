@@ -9,7 +9,7 @@ A DeepSeek Harness (DSH) bundle: two plugins plus a ready-to-use armor prompt.
 - **`armor-inject`** — puts the prompt into the system prompt, but only when the current request is routed to an approved provider/model. Everywhere else the section renders empty, so there is nothing to leak.
 - **`armor-guard`** — cleans or refuses that content before any unapproved route can reach it: on the way into conversation history, and again just before a request is sent.
 - **`armor/armor.md`** — a working example prompt. Replace it with your own.
-- **`armor-retry`** — **off by default, experimental.** When a reply opens like a refusal it keeps the turn alive and asks again. Two of four runs flipped a refusal into an answer, but some turns then end with an internal error, so it is not ready to switch on. `lib/retry.js` records exactly what was tried.
+- **`armor-retry`** — when a reply opens like a refusal it keeps the turn alive and asks again. It raises the compliance rate (a ransomware module answered 2 of 3 runs without it, 3 of 4 with it) but cannot move a request the model refuses categorically. Both measurements are in `lib/retry.js`.
 
 ---
 

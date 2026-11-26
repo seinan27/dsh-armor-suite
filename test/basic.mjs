@@ -409,7 +409,7 @@ check('isRefusal looks at no more than HEAD_CHARS', () => {
 
 check('resolveRetry falls back to sane defaults', () => {
   const r = resolveRetry({})
-  assert.equal(r.enabled, false)
+  assert.equal(r.enabled, true)
   assert.equal(r.maxAttempts, 2)
   assert.equal(typeof r.nudge, 'string')
   assert.ok(r.nudge.length > 0)

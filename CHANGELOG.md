@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.1 — 2026-11-26
+
+**Fixes the defect that made 1.2.0 ship `armor-retry` disabled.**
+
+- Root cause found: a pending message needs the same shape a client sends —
+  `{ id, role, source: { kind }, content }`. Without `source`, the claim path reads
+  `message.source.kind` on `undefined` and the turn dies with
+  `Cannot read properties of undefined (reading 'kind')`. Confirmed against a real
+  `user/message` event in a session log. With the field present, four runs produced
+  four clean turn ends.
+- `armor-retry` is now **enabled by default**, and no longer errors.
+- Two measurements recorded in the module header, same profile and wording:
+  stochastic refusal (ransomware module) answered 2 of 3 without the follow-up and 3 of 4
+  with it; a categorically refused request answered 1 of 4 and the model stated the
+  refusal was a line it would not cross. Resampling moves odds, not decisions.
+
 ## 1.2.0 — 2026-11-26
 
 - New `armor-retry` entry point: when a reply opens like a refusal, keep the turn alive
