@@ -53,16 +53,39 @@ dsh plugin --profile <profile> add /path/to/dsh-armor-suite
     file: ''            # 空 = 本包的 ./armor/armor.md
     routes: []          # 空 = 内置的 DeepSeek 默认路由
     order: -2000
+    markers:
+      - begin: '<!-- armor:begin -->'
+        end: '<!-- armor:end -->'
 
 - id: armor-guard
   config:
     routes: []          # 与上面同一份列表
+    markers:            # 与上面同一组标记，允许多组，全都会剥
+      - begin: '<!-- armor:begin -->'
+        end: '<!-- armor:end -->'
+    signatures:         # 纯字符串，只在每段开头附近检查
+      - '<|im_start|>system:'
+      - '# 破甲'
     onResidual: clean   # clean | block | warn
     replacement: '[content removed]'
     diagFile: ''        # 空 = 不落盘
 ```
 
 `routes` 里写的是精确的 `provider/model`。**有意不支持前缀匹配**——模型名里带 `deepseek` 不代表它由 DeepSeek 提供，OpenRouter 上就有 `~deepseek/...` 这类。
+
+### 清理侧只认你声明过的东西
+
+这是整个包最需要先理解的一点。
+
+`armor-guard` 匹配的是**你在配置里列出的标记和特征串**。它不是「通用越狱检测」——那是个没有解决的问题，假装有反而更糟。
+
+```
+被 armor-inject 包过的破甲     标记在          →  其他路由上会被清理
+你自己的破甲、没声明标记        看不见          →  原样放行
+别人的越狱提示词               看不见          →  原样放行
+```
+
+所以：**你要用自己写的破甲，就得把它的标记或特征串声明出来。** 否则清理侧看起来在工作，实际上对你那份什么都没做。测试里专门钉住了这个行为（`undeclared content is NOT detected`），不会悄悄变化。
 
 ### `onResidual` 三档
 
@@ -101,6 +124,10 @@ text: typeof section.text === 'function' ? section.text(context) : section.text
 - `decision.value`（会被重新渲染进工具输出；**对象键**里带受保护内容时同样 block——键没法安全改写）
 
 不覆盖，且是有意的：
+
+- **任何没有声明过标记或特征串的内容。** 见上一节。别人的越狱词、你忘了登记的自己那份，都看不见。
+- **`armor/armor.md` 用在非 DeepSeek 模型上。** 随包的这份破甲是按 DeepSeek 系的指令跟随习惯调的（句式、硬约束、术语表）。换到 Claude/GPT/Gemini 上行为未经验证，可能部分失效或过度遵守。详见 `armor/README.md`。
+- **一个实例多份破甲。** 一个插件实例读一个文件。几份请合成一份，或者用不同 profile；同一进程装两份会共用模块级配置，互相覆盖。
 
 - **图片等非文本块。** 本包只守文本标记。图里烧进去的字是 OCR 的问题，答案不一样。
 - **用户自己粘贴进来的内容。** 那走的是用户消息；`agent/pre-step` 只看得到本轮新认领的消息，载荷也只读。

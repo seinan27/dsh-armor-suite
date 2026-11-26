@@ -1,11 +1,15 @@
 # Two plugins, one purpose: protected content stays on approved routes only.
 #
-#   armor-inject  injects the armor prompt into the system prompt, but only when the
+#   armor-inject  injects the protected prompt into the system prompt, but only when the
 #                 current request is routed to an approved provider/model
 #   armor-guard   cleans (or blocks) that content before any other route can see it
 #
-# Both read the same `routes` list. Keep them in sync — the defaults are DeepSeek's
-# four official routes; override them below if your profile names them differently.
+# Both read the same `routes`, `markers` and `signatures`. Keep them in sync — the guard
+# can only recognise what the injector writes, plus whatever you declare here.
+#
+# IMPORTANT: this bundle guards *declared* markers, not "adversarial prompts in general".
+# If you bring your own prompt, put its markers/signatures below, or the guard will never
+# notice it.
 
 - insert:
     - id: armor-inject
@@ -18,12 +22,27 @@
         routes: []
         # Section order inside the system prompt. Negative = earlier.
         order: -2000
+        # Marker pair written around the prompt. The guard strips by this exact boundary,
+        # so both plugins must agree. Add more pairs only if you also handle them in guard.
+        markers:
+          - begin: '<!-- armor:begin -->'
+            end: '<!-- armor:end -->'
 
     - id: armor-guard
       name: 'dsh-armor-suite/guard'
       config:
         # Same list as above. Keep both identical.
         routes: []
+        # Same marker pairs as above. Several pairs are allowed and all are stripped.
+        markers:
+          - begin: '<!-- armor:begin -->'
+            end: '<!-- armor:end -->'
+        # Fallback signatures: plain strings that mark protected content whose markers
+        # were lost (truncated paste, partial copy). Only checked near the start of each
+        # text segment. Add your own prompt's opening lines here.
+        signatures:
+          - '<|im_start|>system:'
+          - '# 破甲'
         # What to do when protected content reaches an unapproved route.
         #   clean  redact the content before it enters history (default)
         #   block  refuse to send the request at all

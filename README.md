@@ -59,10 +59,19 @@ patch file; the two route lists must stay identical.
     file: ''            # empty = ./armor/armor.md of this package
     routes: []          # empty = built-in DeepSeek defaults
     order: -2000
+    markers:
+      - begin: '<!-- armor:begin -->'
+        end: '<!-- armor:end -->'
 
 - id: armor-guard
   config:
     routes: []          # same list as above
+    markers:            # same pairs as above; several are allowed
+      - begin: '<!-- armor:begin -->'
+        end: '<!-- armor:end -->'
+    signatures:         # plain strings, checked near the start of each segment
+      - '<|im_start|>system:'
+      - '# 破甲'
     onResidual: clean   # clean | block | warn
     replacement: '[content removed]'
     diagFile: ''        # empty = no dump
@@ -70,6 +79,24 @@ patch file; the two route lists must stay identical.
 
 `routes` entries are exact `provider/model` strings. Prefix matching is deliberately not
 supported: a model whose name contains `deepseek` is not necessarily served by DeepSeek.
+
+### The guard only sees what you declare
+
+This is the single most important thing to understand about this bundle.
+
+`armor-guard` matches **markers and signatures you list in the config**. It does not
+detect "adversarial prompts in general" — that is an unsolved problem, and pretending
+otherwise would be worse than the honest limitation.
+
+```
+Your prompt wrapped by armor-inject   →  markers present      →  cleaned on other routes
+Your own prompt, no declared markers  →  invisible            →  passes through untouched
+Somebody else's jailbreak             →  invisible            →  passes through untouched
+```
+
+So: **if you bring your own prompt, declare its markers or signatures.** Otherwise the
+guard is doing nothing for you while looking like it is. The test suite pins this
+behaviour down (`undeclared content is NOT detected`), so it cannot silently change.
 
 ### `onResidual`
 
@@ -115,6 +142,11 @@ Covered:
 
 Not covered, on purpose:
 
+- **anything without a declared marker or signature.** See the section above. Foreign
+  prompts — someone else's jailbreak, a prompt you forgot to register — are invisible.
+- **`armor/armor.md` on non-DeepSeek models.** The shipped prompt is tuned for DeepSeek
+  model families (sentence shape, hard constraints, term list). On Claude/GPT/Gemini its
+  behaviour is untested and may partially fail or overshoot. See `armor/README.md`.
 - **image and other non-text blocks.** This bundle guards text markers. Text baked into an
   image is an OCR problem with a different answer.
 - **content the user pastes.** That enters as a user message; `agent/pre-step` sees only
@@ -122,6 +154,9 @@ Not covered, on purpose:
 - **a model switch after protected text is already in history.** The original is in the
   shared history; the third layer will refuse that request rather than send it. The
   current DSH hooks offer no way to rewrite a complete request copy.
+- **more than one armor file per instance.** One plugin instance reads one file. Merge
+  several prompts into one file, or use separate profiles; two instances in the same
+  process share one module-level config and would overwrite each other.
 
 ## Test
 
